@@ -1,0 +1,39 @@
+
+# proxy all local container,
+
+version: '2.1'
+services:
+  docker-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${DOCKER_REGISTRY:-registry.docker.local}/docker-proxy:1.0.0-alpha
+    restart: always
+    command: ["nginx", "-g", "daemon off;"]
+    container_name: ${DOCKER_PROXY_HOSTNAME:-docker.proxy.local}
+    hostname: ${DOCKER_PROXY_HOSTNAME:-docker.proxy.local}
+    external_links:
+    - nexus3.local:${FILESERVER_DOMAIN:-fileserver.local}
+    - nexus3.local:${NEXUS_DOMAIN:-nexus3.local}
+    - nexus3.local:${DOCKER_MIRROR_DOMAIN:-mirror.docker.local}
+    - nexus3.local:${DOCKER_REGISTRY_DOMAIN:-registry.docker.local}
+    ports:
+    - "80:80/tcp"
+    environment:
+    - DOCKER_MIRROR_DOMAIN=${DOCKER_MIRROR_DOMAIN:-mirror.docker.local}
+    - DOCKER_MIRROR_PORT=${DOCKER_MIRROR_PORT:-5001}
+    - DOCKER_REGISTRY_DOMAIN=${DOCKER_REGISTRY_DOMAIN:-registry.docker.local}
+    - DOCKER_REGISTRY_PORT=${DOCKER_REGISTRY_PORT:-5000}
+    - FILESERVER_DOMAIN=${FILESERVER_DOMAIN:-fileserver.local}
+    - NEXUS_CONTEXT=${NEXUS_CONTEXT:-nexus} #/nexus/repository/files
+    - NEXUS_DEPLOYMENT_PASSWORD=${NEXUS_DEPLOYMENT_PASSWORD:-deployment}
+    - NEXUS_DOMAIN=${NEXUS_DOMAIN:-nexus3.local}
+    - NEXUS_PORT=${NEXUS_PORT:-8081}
+    - NEXUS_PROXY_HOSTNAME=${NEXUS_PROXY_HOSTNAME:-nexus.local}
+    - GITLAB_DOMAIN=${GITLAB_DOMAIN:-gitlab.local}
+    - GITLAB_DOMAIN_PORT=${GITLAB_DOMAIN_PORT:-80}
+
+networks:
+  default:
+    external:
+      name: oss-network
