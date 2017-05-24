@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 export INFRASTRUCTURE=local
 export DOCKER_REGISTRY=home1oss
 
@@ -8,7 +7,6 @@ export owner_name="rainleon-home1-oss"
 export branch_refer="develop"
 export git_domain="github.com"
 
-
 # nexus
 export DOCKER_MIRROR_DOMAIN=mirror.docker.${INFRASTRUCTURE}
 export DOCKER_REGISTRY_DOMAIN=registry.docker.${INFRASTRUCTURE}
@@ -16,7 +14,6 @@ export FILESERVER_DOMAIN=fileserver.${INFRASTRUCTURE}
 export INTERNAL_NEXUS=none
 export NEXUS_DOMAIN=nexus3.${INFRASTRUCTURE}
 export NEXUS_HOSTNAME=nexus3.${INFRASTRUCTURE}
-
 
 # nexus gitlab jenkins
 export NEXUS_PROXY_HOSTNAME=nexus.${INFRASTRUCTURE}
@@ -36,9 +33,6 @@ export DOCKER_REGISTRY_PORT=5000
 export DOCKER_MIRROR_PORT=5001
 export POSTGRESQL_PORT=5432
 
-#first
-#docker network create oss-network
-
 
 declare -A DOCKER_INFRA_LOCAL_DICT
 
@@ -47,15 +41,19 @@ DOCKER_INFRA_LOCAL_DICT["docker-jenkins"]="git@github.com:${owner_name}/docker-j
 DOCKER_INFRA_LOCAL_DICT["docker-nexus3"]="git@github.com:${owner_name}/docker-nexus3.git nexus3"
 DOCKER_INFRA_LOCAL_DICT["oss-docker"]="git@github.com:${owner_name}/oss-docker.git postgresql rancher"
 DOCKER_INFRA_LOCAL_DICT["docker-sonarqube"]="git@github.com:${owner_name}/docker-sonarqube.git ./"
+DOCKER_INFRA_LOCAL_DICT["docker-proxy"]="git@github.com:${owner_name}/docker-proxy.git ./"
 
-# 启动所有定义好的基础服务
-function start_infra_all(){
+function start_infra(){
 
-    mkdir -p oss-docker && rm -rf oss-docker/*
+    local TO_START_ARRAY=("$@")
+    mkdir -p oss-docker
 
-    for infra_name in ${!DOCKER_INFRA_LOCAL_DICT[@]}
+    for infra_name in ${TO_START_ARRAY[@]}
     do
-        array=(${DOCKER_INFRA_LOCAL_DICT[$infra_name]// / });
+        echo "--------start up $infra_name"
+        # 清理目录
+        rm -rf oss-docker/$infra_name
+        array=(${DOCKER_INFRA_LOCAL_DICT["$infra_name"]// / });
         git_clone_url=${array[0]};
 
         for(( i=1;i<${#array[@]};i++))
@@ -87,36 +85,34 @@ function start_infra_all(){
 
         done
     done
-}
-
-# eval "$(curl -s -L ${git_domain}/rainleon/docker-proxy/master/proxy.sh)" \
-# 启动代理
-function start_proxy(){
-    export DOCKER_REGISTRY=registry.docker.${INFRASTRUCTURE}
-
-    docker-compose stop
-    docker-compose rm -f
-    docker-compose build
-    docker-compose up -d
-}
-
-function start_infra(){
     echo "-----------start_infra-------"
 }
 
 
+# 启动所有定义好的基础服务
+function start_infra_all(){
+    start_infra docker-gitlab docker-jenkins docker-nexus3 oss-docker docker-sonarqube
+}
+
+# 启动代理
+function start_proxy(){
+    export DOCKER_REGISTRY=registry.docker.${INFRASTRUCTURE}
+    start_infra docker-proxy
+}
+
 # start_infra_all
 # start_proxy
+#docker network create oss-network
 
 case "$1" in
-    "start_infra")
-        start_infra_all
+    "start_infra_all")
+        start_infra_all ;
         ;;
     "start_proxy")
-        start_proxy
+        start_proxy;
         ;;
     "start_infra")
-        start_infra
+        $@;
         ;;
     "start_all")
         echo "--------start all infra----------"
