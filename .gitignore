@@ -2,3 +2,5 @@
 *.iml
 
 *.jks
+.idea
+oss-docker
