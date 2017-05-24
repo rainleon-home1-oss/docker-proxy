@@ -3,7 +3,7 @@
 
 ## 启动本地基础服务
 
-    bash <(curl -s -L https://raw.githubusercontent.com/home1-oss/docker-proxy/master/proxy.sh) start_infra
+    bash <(curl -s -L https://raw.githubusercontent.com/home1-oss/docker-proxy/master/proxy.sh) start_infra_all
 
 ## 启动代理
 
@@ -15,6 +15,18 @@
 
 
 ## 验证服务
+配置hosts文件，增加如下内容:
+
+    127.0.0.1	 rancher.local
+    127.0.0.1	 gitlab.local
+    127.0.0.1	 nexus.local
+    127.0.0.1    registry.docker.local
+    127.0.0.1    mirror.docker.local
+    127.0.0.1    fileserver.local
+    127.0.0.1    jenkins.local
+    127.0.0.1    sonarqube.local
+
+逐个验证服务
 
 - [nexus](http://nexus.local/nexus)
 - [jenkins](http://jenkins.local)
