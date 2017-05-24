@@ -3,15 +3,15 @@
 
 ## 启动本地基础服务
 
-    bash <(curl -s -L https://raw.githubusercontent.com/rainleon/docker-proxy/master/proxy.sh) start_infra
+    bash <(curl -s -L https://raw.githubusercontent.com/home1-oss/docker-proxy/master/proxy.sh) start_infra
 
 ## 启动代理
 
-    bash <(curl -s -L https://raw.githubusercontent.com/rainleon/docker-proxy/master/proxy.sh) start_proxy
+    bash <(curl -s -L https://raw.githubusercontent.com/home1-oss/docker-proxy/master/proxy.sh) start_proxy
 
 ## 一键启动所有服务[推荐]
 
-    bash <(curl -s -L https://raw.githubusercontent.com/rainleon/docker-proxy/master/proxy.sh) start_all
+    bash <(curl -s -L https://raw.githubusercontent.com/home1-oss/docker-proxy/master/proxy.sh) start_all
 
 
 ## 验证服务
