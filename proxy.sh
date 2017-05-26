@@ -76,9 +76,9 @@ function start_infra(){
             elif ([ "./" == "${array[i]}" ] && [ -f "docker-compose.yml" ]); then
                 images=(`(cd oss-docker/${infra_name} && docker-compose pull)`)
                 if [ -z "${images}" ]; then
-                    images=(`(cd oss-docker/${infra_name}} && docker-compose build)`)
+                    images=(`(cd oss-docker/${infra_name} && docker-compose build)`)
                 fi
-                (cd oss-docker/${infra_name}/${array[i]} && docker-compose stop && docker-compose rm -f && docker-compose up -d)
+                (cd oss-docker/${infra_name} && docker-compose stop && docker-compose rm -f && docker-compose up -d)
             else
                 echo "do not contain docker-compose.yml ! skip...  "
             fi
