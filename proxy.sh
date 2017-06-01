@@ -66,16 +66,18 @@ function start_infra(){
             echo "-------------docker-compose operation ${array[i]} @ ${infra_name}-------------"
 #            支持子目录，如docker-nexus3下的nexus3在目录 docker-nexus3/nexus3
             if ([ "./" != "${array[i]}" ] && [ -d "oss-docker/${infra_name}/${array[i]}" ]); then
-                images=(`(cd oss-docker/${infra_name}/${array[i]} && docker-compose pull)`)
+                (cd oss-docker/${infra_name}/${array[i]} && docker-compose pull)
+                images=(`(echo $?)`)
                 echo "images pull --------$images"
-                if [ -z "${images}" ]; then
+                if [ "0" != "${images}" ]; then
                     images=(`(cd oss-docker/${infra_name}/${array[i]} && docker-compose build)`)
                 fi
                 (cd oss-docker/${infra_name}/${array[i]} && docker-compose stop && docker-compose rm -f && docker-compose up -d)
 #                在根目录下的docker-compose文件
-            elif ([ "./" == "${array[i]}" ] && [ -f "docker-compose.yml" ]); then
-                images=(`(cd oss-docker/${infra_name} && docker-compose pull)`)
-                if [ -z "${images}" ]; then
+            elif ([ "./" == "${array[i]}" ] && [ -f "oss-docker/${infra_name}/docker-compose.yml" ]); then
+                (cd oss-docker/${infra_name} && docker-compose pull)
+                images=(`(echo $?)`)
+                if [ "0" != "${images}" ]; then
                     images=(`(cd oss-docker/${infra_name} && docker-compose build)`)
                 fi
                 (cd oss-docker/${infra_name} && docker-compose stop && docker-compose rm -f && docker-compose up -d)
